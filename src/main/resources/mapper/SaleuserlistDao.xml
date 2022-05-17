@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctg.cartier.dao.SaleuserlistDao">
+  <resultMap id="BaseResultMap" type="com.ctg.cartier.pojo.dto.Saleuserlist">
+    <id column="USERID" jdbcType="VARCHAR" property="userid" />
+    <result column="USERNAME" jdbcType="VARCHAR" property="username" />
+    <result column="DEPARTMENT" jdbcType="VARCHAR" property="department" />
+    <result column="POSITION" jdbcType="VARCHAR" property="position" />
+    <result column="TEL_NUM" jdbcType="VARCHAR" property="telNum" />
+    <result column="BRAND" jdbcType="VARCHAR" property="brand" />
+    <result column="IS_APPROVER" jdbcType="CHAR" property="isApprover" />
+    <result column="APPROV_BRAND" jdbcType="VARCHAR" property="approvBrand" />
+    <result column="FSDATE" jdbcType="TIMESTAMP" property="fsdate" />
+    <result column="GENDER" jdbcType="CHAR" property="gender" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    USERID, USERNAME, DEPARTMENT, "POSITION", TEL_NUM, BRAND, IS_APPROVER, APPROV_BRAND, 
+    FSDATE, GENDER
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from SALEUSERLIST
+    where USERID = #{userid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from SALEUSERLIST
+    where USERID = #{userid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" keyColumn="USERID" keyProperty="userid" parameterType="com.ctg.cartier.pojo.dto.Saleuserlist" useGeneratedKeys="true">
+    insert into SALEUSERLIST (USERNAME, DEPARTMENT, "POSITION", 
+      TEL_NUM, BRAND, IS_APPROVER, 
+      APPROV_BRAND, FSDATE, GENDER
+      )
+    values (#{username,jdbcType=VARCHAR}, #{department,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, 
+      #{telNum,jdbcType=VARCHAR}, #{brand,jdbcType=VARCHAR}, #{isApprover,jdbcType=CHAR}, 
+      #{approvBrand,jdbcType=VARCHAR}, #{fsdate,jdbcType=TIMESTAMP}, #{gender,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="USERID" keyProperty="userid" parameterType="com.ctg.cartier.pojo.dto.Saleuserlist" useGeneratedKeys="true">
+    insert into SALEUSERLIST
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="username != null">
+        USERNAME,
+      </if>
+      <if test="department != null">
+        DEPARTMENT,
+      </if>
+      <if test="position != null">
+        "POSITION",
+      </if>
+      <if test="telNum != null">
+        TEL_NUM,
+      </if>
+      <if test="brand != null">
+        BRAND,
+      </if>
+      <if test="isApprover != null">
+        IS_APPROVER,
+      </if>
+      <if test="approvBrand != null">
+        APPROV_BRAND,
+      </if>
+      <if test="fsdate != null">
+        FSDATE,
+      </if>
+      <if test="gender != null">
+        GENDER,
+      </if>
+      <if test="userid != null">
+        USERID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="department != null">
+        #{department,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null">
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="telNum != null">
+        #{telNum,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null">
+        #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="isApprover != null">
+        #{isApprover,jdbcType=CHAR},
+      </if>
+      <if test="approvBrand != null">
+        #{approvBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="fsdate != null">
+        #{fsdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gender != null">
+        #{gender,jdbcType=CHAR},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ctg.cartier.pojo.dto.Saleuserlist">
+    update SALEUSERLIST
+    <set>
+      <if test="username != null">
+        USERNAME = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="department != null">
+        DEPARTMENT = #{department,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null">
+        "POSITION" = #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="telNum != null">
+        TEL_NUM = #{telNum,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null">
+        BRAND = #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="isApprover != null">
+        IS_APPROVER = #{isApprover,jdbcType=CHAR},
+      </if>
+      <if test="approvBrand != null">
+        APPROV_BRAND = #{approvBrand,jdbcType=VARCHAR},
+      </if>
+      <if test="fsdate != null">
+        FSDATE = #{fsdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gender != null">
+        GENDER = #{gender,jdbcType=CHAR},
+      </if>
+    </set>
+    where USERID = #{userid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ctg.cartier.pojo.dto.Saleuserlist">
+    update SALEUSERLIST
+    set USERNAME = #{username,jdbcType=VARCHAR},
+      DEPARTMENT = #{department,jdbcType=VARCHAR},
+      "POSITION" = #{position,jdbcType=VARCHAR},
+      TEL_NUM = #{telNum,jdbcType=VARCHAR},
+      BRAND = #{brand,jdbcType=VARCHAR},
+      IS_APPROVER = #{isApprover,jdbcType=CHAR},
+      APPROV_BRAND = #{approvBrand,jdbcType=VARCHAR},
+      FSDATE = #{fsdate,jdbcType=TIMESTAMP},
+      GENDER = #{gender,jdbcType=CHAR}
+    where USERID = #{userid,jdbcType=VARCHAR}
+  </update>
+
+
+
+  <resultMap id="ApproveResultMap" type="com.ctg.cartier.pojo.dto.ApprovesDto">
+    <id column="USERID" jdbcType="VARCHAR" property="user_id" />
+    <result column="USERNAME" jdbcType="VARCHAR" property="user_name" />
+  </resultMap>
+  <sql id="APPROVE_LIST">
+    USERID, USERNAME
+  </sql>
+  <select id="selectByApprove" parameterType="java.lang.String" resultMap="ApproveResultMap">
+    select
+    <include refid="APPROVE_LIST"/>
+    from SALEUSERLIST
+    where IS_APPROVER = 'Y'
+      and BRAND IN(SELECT BRAND
+                    from SALEUSERLIST
+                    where USERID = #{userid,jdbcType=VARCHAR})
+  </select>
+
+</mapper>

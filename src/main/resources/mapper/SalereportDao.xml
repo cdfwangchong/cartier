@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctg.cartier.dao.SaleReportDao">
+  <select id="qryXsdno" statementType="CALLABLE" resultType="java.util.Map">
+        {CALL dbusrit.if_cartierSalereport.qry_sellhead
+        (#{xsdno,mode=IN,jdbcType=VARCHAR},
+        #{user_id,mode=IN,jdbcType=VARCHAR},
+        #{shRc,mode=OUT,jdbcType=CURSOR,javaType=java.sql.ResultSet,resultMap=SaleReportDto},
+        #{ret_flag,mode=OUT,jdbcType=VARCHAR},
+        #{ret_msg,mode=OUT,jdbcType=VARCHAR}
+        )}
+  </select>
+
+  <resultMap type="com.ctg.cartier.pojo.dto.SaleReportDto" id="SaleReportDto">
+    <result column="billno" property="billno"/>
+    <result column="zsl" property="goods_total"/>
+    <result column="zje" property="sale_amount"/>
+    <result column="xsdno" property="xsdno"/>
+    <result column="cshh" property="goods_cshh"/>
+      <result column="sl" property="goods_count"/>
+      <result column="gbid" property="goods_id"/>
+      <result column="sale_name" property="sale_name"/>
+  </resultMap>
+
+    <select id="insertSellDetail" statementType="CALLABLE" resultType="java.util.Map">
+        {CALL dbusrit.if_cartierSalereport.insert_selldetail
+        (#{xsdno,mode=IN,jdbcType=VARCHAR},
+        #{userId,mode=IN,jdbcType=VARCHAR},
+        #{billno,mode=IN,jdbcType=VARCHAR},
+        #{goodsTotal,mode=IN,jdbcType=DECIMAL},
+        #{custno,mode=IN,jdbcType=VARCHAR},
+        #{saleAmount,mode=IN,jdbcType=DECIMAL},
+        #{goodsList,mode=IN,jdbcType=ARRAY,javaType=java.util.ArrayList,typeHandler=com.ctg.cartier.pojo.until.CustAddrListHandler},
+        #{ret_flag,mode=OUT,jdbcType=VARCHAR},
+        #{ret_msg,mode=OUT,jdbcType=VARCHAR}
+        )}
+  </select>
+
+    <select id="updSellDetail" statementType="CALLABLE" resultType="java.util.Map">
+        {CALL dbusrit.if_cartierSalereport.upd_selldetail
+        (#{xsdno,mode=IN,jdbcType=VARCHAR},
+        #{userId,mode=IN,jdbcType=VARCHAR},
+        #{billno,mode=IN,jdbcType=VARCHAR},
+        #{goodsTotal,mode=IN,jdbcType=DECIMAL},
+        #{custno,mode=IN,jdbcType=VARCHAR},
+        #{saleAmount,mode=IN,jdbcType=DECIMAL},
+        #{approver,mode=IN,jdbcType=VARCHAR},
+        #{goodsList,mode=IN,jdbcType=ARRAY,javaType=java.util.ArrayList,typeHandler=com.ctg.cartier.pojo.until.CustAddrListHandler},
+        #{ret_flag,mode=OUT,jdbcType=VARCHAR},
+        #{ret_msg,mode=OUT,jdbcType=VARCHAR}
+        )}
+  </select>
+
+    <sql id="Base_Column_List">
+    XSDNO, BILLNO,GOODS_TOTAL, AMOUNT,SALE_TIME
+  </sql>
+
+    <sql id="criteria" >
+        <if test="userid != null" >
+            and sh.OPERATOR = #{userid,jdbcType=VARCHAR}
+        </if>
+        <if test='"X".equals(approv_result)' >
+            and APPROV_RESULT = 'X'
+        </if>
+        <if test='"N".equals(approv_result)' >
+            and APPROV_RESULT = 'N'
+        </if>
+        <if test='"SY".equals(approv_result)' >
+            and APPROV_RESULT IN ('S','Y')
+        </if>
+    </sql>
+
+    <sql id="tb" >
+        SELECT <include refid="Base_Column_List"/>FROM(
+        select sh.XSDNO,
+        sh.BILLNO,
+        sh.GOODS_TOTAL,
+        sh.AMOUNT,
+        sh.SALE_TIME,
+        sh.FSDATE,
+        sh.APPROV_REMARK
+        from salereporthead sh
+        <where> <include refid="criteria"/> </where>)
+         order by fsdate desc
+    </sql>
+
+    <select id="paging" resultMap="Record" parameterType="map">
+        select <include refid="Base_Column_List"/> from (select row_.*, rownum rownum_ from (<include refid="tb"/>) row_
+        where rownum &lt;=  #{pageNum} * #{pageSize}) where rownum_ &gt; (#{pageNum} - 1) * #{pageSize}
+    </select>
+
+    <resultMap type="com.ctg.cartier.pojo.dto.SaleReportDto" id="Record">
+        <result column="XSDNO" property="xsdno"/>
+        <result column="BILLNO" property="billno"/>
+        <result column="GOODS_TOTAL" property="goods_total"/>
+        <result column="AMOUNT" property="sale_amount"/>
+        <result column="SALE_TIME" property="sale_date"/>
+        <result column="APPROV_REMARK" property="remark"/>
+    </resultMap>
+
+    <select id="Count" resultType="long" parameterType="map">
+        select count(1)
+      from  salereporthead sh
+        <where> <include refid="criteria"/> </where>
+    </select>
+
+    <select id="qrySaleReportInfo" statementType="CALLABLE" resultType="java.util.Map">
+        {CALL dbusrit.if_cartierSalereport.qry_salereportinfo
+        (#{xsdno,mode=IN,jdbcType=VARCHAR},
+        #{user_id,mode=IN,jdbcType=VARCHAR},
+        #{shRc,mode=OUT,jdbcType=CURSOR,javaType=java.sql.ResultSet,resultMap=SaleReportInfoDto},
+        #{ret_flag,mode=OUT,jdbcType=VARCHAR},
+        #{ret_msg,mode=OUT,jdbcType=VARCHAR}
+        )}
+  </select>
+
+    <resultMap type="com.ctg.cartier.pojo.dto.SaleReportDto" id="SaleReportInfoDto">
+        <result column="xsdno" property="xsdno"/>
+        <result column="billno" property="billno"/>
+        <result column="goods_total" property="goods_total"/>
+        <result column="custno" property="custno"/>
+        <result column="operator" property="user_id"/>
+        <result column="operator_name" property="user_name"/>
+        <result column="sale_time" property="sale_date"/>
+        <result column="amount" property="sale_amount"/>
+        <result column="goods_cshh" property="goods_cshh"/>
+        <result column="goods_count" property="goods_count"/>
+        <result column="independent_code" property="independent_code"/>
+        <result column="goods_id" property="goods_id"/>
+        <result column="approv_remark" property="remark"/>
+        <result column="approv_result" property="result"/>
+    </resultMap>
+
+</mapper>

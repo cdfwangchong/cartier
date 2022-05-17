@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctg.cartier.dao.ManageDao">
+  <resultMap id="BaseResultMap" type="com.ctg.cartier.pojo.dto.ManageSaleReportDto">
+    <id column="XSDNO" jdbcType="VARCHAR" property="xsdno" />
+    <result column="BILLNO" jdbcType="VARCHAR" property="billno" />
+    <result column="BRAND_NAME" jdbcType="VARCHAR" property="brand_name" />
+    <result column="BRAND_CODE" jdbcType="VARCHAR" property="brand_code" />
+    <result column="GOODS_CSHH" jdbcType="VARCHAR" property="goods_cshh" />
+    <result column="GOODS_ID" jdbcType="VARCHAR" property="goods_id" />
+    <result column="GOODS_COUNT" jdbcType="DECIMAL" property="goods_count" />
+    <result column="INDEPENDENT_CODE" jdbcType="VARCHAR" property="independent_code" />
+    <result column="OPERATOR" jdbcType="VARCHAR" property="sale_name" />
+    <result column="CUSTNO" jdbcType="VARCHAR" property="custno" />
+    <result column="SALE_TIME" jdbcType="TIMESTAMP" property="sale_date" />
+    <result column="GOODS_COUNT" jdbcType="DECIMAL" property="goods_count" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    XSDNO, BILLNO, BRAND_NAME, BRAND_CODE, GOODS_CSHH, GOODS_ID, GOODS_TOTAL, INDEPENDENT_CODE,CUSTNO,OPERATOR,SALE_TIME,GOODS_COUNT
+  </sql>
+
+  <sql id="criteria" >
+    <if test="start_time != null">
+      and SH.SALE_TIME <![CDATA[>=]]> #{start_time,jdbcType=TIMESTAMP}
+    </if>
+    <if test="end_time != null">
+      and SH.SALE_TIME <![CDATA[<=]]> #{end_time,jdbcType=TIMESTAMP}
+    </if>
+    <if test="brand_code != null" >
+      and SD.BRAND_CODE = #{brand_code,jdbcType=VARCHAR}
+    </if>
+    <if test="brand_name != null" >
+      and SD.BRAND_NAME = #{brand_name,jdbcType=VARCHAR}
+    </if>
+    <if test="sale_name != null" >
+      and SH.OPERATOR_NAME = #{sale_name,jdbcType=VARCHAR}
+    </if>
+    <if test="xsdno != null" >
+      and SH.XSDNO = #{xsdno,jdbcType=VARCHAR}
+    </if>
+  </sql>
+
+  <sql id="tb">
+    select <include refid="Base_Column_List" /> from (
+    select
+    SH.XSDNO, SH.BILLNO, SD.BRAND_NAME, SD.BRAND_CODE, SD.GOODS_CSHH, SD.GOODS_ID, SH.GOODS_TOTAL,
+    SD.INDEPENDENT_CODE,SH.CUSTNO,SH.OPERATOR,SH.SALE_TIME,SD.GOODS_COUNT
+    from SALEREPORTHEAD SH
+    left join SALEREPORTDETAIL SD on SH.XSDNO = SD.XSDNO
+    <where> <include refid="criteria"/> </where>)
+</sql>
+
+   <select id="qrySaleReport" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List"/> from (select row_.*, rownum rownum_ from (<include refid="tb"/>) row_
+        where rownum &lt;=  #{pageNum} * #{pageSize}) where rownum_ &gt; (#{pageNum} - 1) * #{pageSize}
+    </select>
+
+  <select id="Count" resultType="long" parameterType="map">
+        select count(1)
+         from SALEREPORTHEAD SH
+    left join SALEREPORTDETAIL SD on SH.XSDNO = SD.XSDNO
+    <where> <include refid="criteria"/> </where>
+    </select>
+
+</mapper>

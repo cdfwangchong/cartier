@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctg.cartier.dao.ApproveSaleReportDao">
+    <resultMap id="BaseResultMap" type="com.ctg.cartier.pojo.dto.Salereporthead">
+        <id column="XSDNO" jdbcType="VARCHAR" property="xsdno" />
+        <result column="BILLNO" jdbcType="VARCHAR" property="billno" />
+        <result column="GOODS_TOTAL" jdbcType="DECIMAL" property="goodsTotal" />
+        <result column="CUSTNO" jdbcType="VARCHAR" property="custno" />
+        <result column="OPERATOR" jdbcType="VARCHAR" property="operator" />
+        <result column="OPERATOR_NAME" jdbcType="VARCHAR" property="operatorName" />
+        <result column="SALE_TIME" jdbcType="TIMESTAMP" property="saleTime" />
+        <result column="FSDATE" jdbcType="TIMESTAMP" property="fsdate" />
+        <result column="IS_APPROV" jdbcType="CHAR" property="isApprov" />
+        <result column="APPROV_TIME" jdbcType="TIMESTAMP" property="approvTime" />
+        <result column="APPROVER" jdbcType="VARCHAR" property="approver" />
+        <result column="APPROV_RESULT" jdbcType="CHAR" property="approvResult" />
+        <result column="APPROV_REMARK" jdbcType="VARCHAR" property="approvRemark" />
+        <result column="AMOUNT" jdbcType="VARCHAR" property="amount" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    XSDNO, BILLNO, GOODS_TOTAL, CUSTNO, "OPERATOR", OPERATOR_NAME, SALE_TIME, FSDATE,
+    IS_APPROV, APPROV_TIME, APPROVER, APPROV_RESULT, APPROV_REMARK,AMOUNT
+  </sql>
+  <sql id="criteria" >
+      <if test="userid != null" >
+            and APPROVER = #{userid,jdbcType=VARCHAR}
+        </if>
+        <if test='approv_result == "X"' >
+            and APPROV_RESULT = 'X'
+        </if>
+        <if test='approv_result == "NY"' >
+            and APPROV_RESULT in ('Y','N')
+        </if>
+    </sql>
+
+    <sql id="tb">
+        select <include refid="Base_Column_List" />
+        from salereporthead
+        <where> <include refid="criteria"/> </where>
+    </sql>
+
+    <select id="qryApprove" resultMap="BaseResultMap" parameterType="map">
+        select <include refid="Base_Column_List"/> from (select row_.*, rownum rownum_ from (<include refid="tb"/>) row_
+        where rownum &lt;=  #{pageNum} * #{pageSize}) where rownum_ &gt; (#{pageNum} - 1) * #{pageSize}
+    </select>
+
+    <select id="Count" resultType="long" parameterType="map">
+        select count(1)
+      from SALEREPORTHEAD
+        <where> <include refid="criteria"/> </where>
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.ctg.cartier.pojo.dto.Salereporthead">
+        update SALEREPORTHEAD
+        <set>
+            <if test="billno != null">
+                BILLNO = #{billno,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsTotal != null">
+                GOODS_TOTAL = #{goodsTotal,jdbcType=DECIMAL},
+            </if>
+            <if test="custno != null">
+                CUSTNO = #{custno,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null">
+                "OPERATOR" = #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="operatorName != null">
+                OPERATOR_NAME = #{operatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="saleTime != null">
+                SALE_TIME = #{saleTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="fsdate != null">
+                FSDATE = #{fsdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isApprov != null">
+                IS_APPROV = #{isApprov,jdbcType=CHAR},
+            </if>
+            <if test="approvTime != null">
+                APPROV_TIME = #{approvTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="approver != null">
+                APPROVER = #{approver,jdbcType=VARCHAR},
+            </if>
+            <if test="approvResult != null">
+                APPROV_RESULT = #{approvResult,jdbcType=CHAR},
+            </if>
+            <if test="approvRemark != null">
+                APPROV_REMARK = #{approvRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="amount != null">
+                AMOUNT = #{amount,jdbcType=DECIMAL},
+            </if>
+        </set>
+        where XSDNO = #{xsdno,jdbcType=VARCHAR}
+    </update>
+
+
+
+</mapper>
